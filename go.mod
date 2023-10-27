@@ -4,6 +4,8 @@ go 1.21.1
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/joho/godotenv v1.5.1
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	go.uber.org/zap v1.26.0
 )
