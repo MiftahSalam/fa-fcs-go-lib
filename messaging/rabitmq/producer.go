@@ -45,6 +45,10 @@ func (p *producerRMQ) SendMessage(ctx context.Context, topic string, message mes
 	default:
 	}
 
+	if p.conn == nil {
+		return errors.ErrConnection
+	}
+
 	msg := amqp091.Publishing{
 		Headers:       amqp091.Table{"type": message.Body.Type},
 		ContentType:   message.ContentType,

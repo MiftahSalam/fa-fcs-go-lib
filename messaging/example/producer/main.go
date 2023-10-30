@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/MiftahSalam/fa-fcs-go-lib/messaging"
 	"github.com/MiftahSalam/fa-fcs-go-lib/messaging/rabitmq"
@@ -22,7 +23,7 @@ func main() {
 
 	err := p.Connect()
 	if err != nil {
-		panic("cannot connect to broker server")
+		fmt.Println("cannot connect to broker server")
 	}
 
 	m := messaging.Message{
