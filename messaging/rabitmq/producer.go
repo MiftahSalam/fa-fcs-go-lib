@@ -46,7 +46,7 @@ func (p *producerRMQ) SendMessage(ctx context.Context, topic string, message mes
 	}
 
 	if p.conn == nil {
-		return errors.ErrConnection
+		return p.Reconnect()
 	}
 
 	msg := amqp091.Publishing{
