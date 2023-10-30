@@ -32,6 +32,9 @@ var (
 
 	// - validation
 	ErrValidation = ErrBase.New("failed to validate request body").WithProperty(ErrCodeProperty, "1004").WithProperty(ErrHttpCodeProperty, 400)
+
+	// - connection
+	ErrConnection = ErrBase.New("failed connection").WithProperty(ErrCodeProperty, "1005").WithProperty(ErrHttpCodeProperty, 500)
 )
 
 func WrapErr(err error, message string) *errorx.Error {
