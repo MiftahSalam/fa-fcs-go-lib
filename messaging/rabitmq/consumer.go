@@ -3,6 +3,7 @@ package rabitmq
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/rabbitmq/amqp091-go"
 
@@ -68,15 +69,27 @@ func (consumer *consumerRMQ) handleConsumed(q string, delivery <-chan amqp091.De
 			}
 
 			handler(msg)
+
+			d.Ack(false)
 		}
 
 		if err := <-consumer.err; err != nil {
-			consumer.Reconnect()
-			deliveries, err := consumer.consume()
-			if err != nil {
-				continue
+			fmt.Println("rabitmq connection broken with error: ", err.Error())
+
+			err = consumer.Reconnect()
+			if err == nil {
+				fmt.Println("rabitmq regain connection")
+				deliveries, err := consumer.consume()
+				if err == nil {
+					delivery = deliveries[q]
+				}
+			} else {
+				go func() {
+					consumer.err <- errors.ErrConnection
+				}()
 			}
-			delivery = deliveries[q]
+
+			time.Sleep(1 * time.Second)
 		}
 	}
 
@@ -118,7 +131,7 @@ func (consumer *consumerRMQ) Connect() error {
 
 	err = consumer.channel.ExchangeDeclare(
 		consumer.option.Exchange,
-		"topic",
+		consumer.option.ExchangeType,
 		true,  // durable
 		false, // auto-deleted
 		false, // internal
@@ -149,11 +162,10 @@ func (consumer *consumerRMQ) BindQueue() error {
 }
 
 func (consumer *consumerRMQ) Reconnect() error {
-	if err := consumer.Connect(); err != nil {
-		return err
+	err := consumer.Connect()
+	if err == nil {
+		return consumer.BindQueue()
 	}
-	if err := consumer.BindQueue(); err != nil {
-		return err
-	}
-	return nil
+
+	return err
 }

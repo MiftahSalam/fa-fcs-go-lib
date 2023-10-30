@@ -9,10 +9,13 @@ import (
 
 func main() {
 	options := &rabitmq.ProducerOptions{
-		Address:  "amqp://guest:guest@localhost:5672/",
-		Name:     "test-fa-fcs",
-		Exchange: "test-exchange-fa-fcs",
-		Routing:  "test.fa.fcs.*",
+		CommonOptions: rabitmq.CommonOptions{
+			Address:      "amqp://guest:guest@localhost:5672/",
+			Name:         "test-fa-fcs",
+			Exchange:     "test-exchange-fa-fcs",
+			ExchangeType: "topic",
+			Routing:      "test.fa.fcs.*",
+		},
 	}
 
 	p := rabitmq.NewRMQProducer(options)

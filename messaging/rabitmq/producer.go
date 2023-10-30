@@ -80,7 +80,7 @@ func (p *producerRMQ) Connect() error {
 
 	err = p.channel.ExchangeDeclare(
 		p.option.Exchange,
-		"topic",
+		p.option.ExchangeType,
 		true,  // durable
 		false, // auto-deleted
 		false, // internal
