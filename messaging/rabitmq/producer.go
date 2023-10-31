@@ -58,6 +58,9 @@ func (p *producerRMQ) SendMessage(ctx context.Context, exchange, topic string, m
 		Timestamp:     message.Timestamp,
 	}
 	if err := p.channel.PublishWithContext(ctx, exchange, topic, false, false, msg); err != nil {
+		if err == amqp091.ErrClosed {
+			p.Reconnect()
+		}
 		connErr := errors.ExtractError(errors.ErrConnection)
 		return errors.New(connErr.HttpCode, connErr.Code, err.Error())
 	}
