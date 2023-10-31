@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/MiftahSalam/fa-fcs-go-lib/messaging"
 	"github.com/MiftahSalam/fa-fcs-go-lib/messaging/rabitmq"
@@ -33,6 +34,9 @@ func main() {
 			Type: "json",
 		},
 		ContentType: "application/json",
+		Expired:     "", //will not expired
+		// Expired:     "600000", //will expired in 60 second
+		Timestamp: time.Now(),
 	}
 
 	err = p.SendMessage(context.Background(), options.Routing, m)

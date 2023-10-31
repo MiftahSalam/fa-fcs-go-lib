@@ -54,6 +54,8 @@ func (p *producerRMQ) SendMessage(ctx context.Context, topic string, message mes
 		ContentType:   message.ContentType,
 		CorrelationId: message.CorrelationID,
 		Body:          message.Body.Data,
+		Expiration:    message.Expired,
+		Timestamp:     message.Timestamp,
 	}
 	if err := p.channel.PublishWithContext(ctx, p.option.Exchange, p.option.Routing, false, false, msg); err != nil {
 		connErr := errors.ExtractError(errors.ErrConnection)
