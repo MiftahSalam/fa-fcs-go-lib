@@ -3,11 +3,8 @@ package rabitmq
 import "github.com/rabbitmq/amqp091-go"
 
 type CommonOptions struct {
-	Address      string `json:"address"`
-	Name         string `json:"name"`
-	Exchange     string `json:"exchange"`
-	ExchangeType string `json:"exchange_type"`
-	Routing      string `json:"routing"`
+	Address string `json:"address"`
+	Name    string `json:"name"`
 }
 
 type ProducerOptions struct {
@@ -16,7 +13,10 @@ type ProducerOptions struct {
 
 type ConsumerOptions struct {
 	CommonOptions
-	Queues []string `json:"queues"`
+	ExchangeType string   `json:"exchange_type"`
+	Routing      string   `json:"routing"`
+	Exchange     string   `json:"exchange"`
+	Queues       []string `json:"queues"`
 }
 
 type common struct {

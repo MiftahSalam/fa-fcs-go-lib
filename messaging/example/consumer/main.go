@@ -12,13 +12,13 @@ import (
 func main() {
 	options := &rabitmq.ConsumerOptions{
 		CommonOptions: rabitmq.CommonOptions{
-			Address:      "amqp://guest:guest@localhost:5672/",
-			Name:         "test-fa-fcs",
-			Exchange:     "test-exchange-fa-fcs",
-			ExchangeType: "topic",
-			Routing:      "test.fa.fcs.*",
+			Address: "amqp://guest:guest@localhost:5672/",
+			Name:    "test-fa-fcs",
 		},
-		Queues: []string{"manager-osd"},
+		Exchange:     "test-exchange-fa-fcs",
+		ExchangeType: "topic",
+		Routing:      "test.fa.fcs.*",
+		Queues:       []string{"manager-osd"},
 	}
 
 	c := rabitmq.NewRMQConsumer(options)

@@ -6,5 +6,5 @@ import (
 
 type Producer interface {
 	Connection
-	SendMessage(ctx context.Context, topic string, message Message) error
+	SendMessage(ctx context.Context, exchange, topic string, message Message) error
 }

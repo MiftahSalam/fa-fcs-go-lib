@@ -36,7 +36,7 @@ func NewRMQProducer(opt *ProducerOptions) messaging.Producer {
 	return c
 }
 
-func (p *producerRMQ) SendMessage(ctx context.Context, topic string, message messaging.Message) error {
+func (p *producerRMQ) SendMessage(ctx context.Context, exchange, topic string, message messaging.Message) error {
 	select {
 	case err := <-p.err:
 		if err != nil {
@@ -57,7 +57,7 @@ func (p *producerRMQ) SendMessage(ctx context.Context, topic string, message mes
 		Expiration:    message.Expired,
 		Timestamp:     message.Timestamp,
 	}
-	if err := p.channel.PublishWithContext(ctx, p.option.Exchange, p.option.Routing, false, false, msg); err != nil {
+	if err := p.channel.PublishWithContext(ctx, exchange, topic, false, false, msg); err != nil {
 		connErr := errors.ExtractError(errors.ErrConnection)
 		return errors.New(connErr.HttpCode, connErr.Code, err.Error())
 	}
@@ -79,20 +79,6 @@ func (p *producerRMQ) Connect() error {
 	}()
 
 	p.channel, err = p.conn.Channel()
-	if err != nil {
-		connErr := errors.ExtractError(errors.ErrConnection)
-		return errors.New(connErr.HttpCode, connErr.Code, err.Error())
-	}
-
-	err = p.channel.ExchangeDeclare(
-		p.option.Exchange,
-		p.option.ExchangeType,
-		true,  // durable
-		false, // auto-deleted
-		false, // internal
-		false, // noWait
-		nil,   // arguments
-	)
 	if err != nil {
 		connErr := errors.ExtractError(errors.ErrConnection)
 		return errors.New(connErr.HttpCode, connErr.Code, err.Error())

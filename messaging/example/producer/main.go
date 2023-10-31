@@ -12,11 +12,8 @@ import (
 func main() {
 	options := &rabitmq.ProducerOptions{
 		CommonOptions: rabitmq.CommonOptions{
-			Address:      "amqp://guest:guest@localhost:5672/",
-			Name:         "test-fa-fcs",
-			Exchange:     "test-exchange-fa-fcs",
-			ExchangeType: "topic",
-			Routing:      "test.fa.fcs.*",
+			Address: "amqp://guest:guest@localhost:5672/",
+			Name:    "test-fa-fcs",
 		},
 	}
 
@@ -39,7 +36,8 @@ func main() {
 		Timestamp: time.Now(),
 	}
 
-	err = p.SendMessage(context.Background(), options.Routing, m)
+	err = p.SendMessage(context.Background(), "no-exchange", "no-topic", m)
+	// err = p.SendMessage(context.Background(), options.Routing, m)
 	if err != nil {
 		panic("cannot connect to broker server")
 	}
