@@ -4,6 +4,7 @@ import "time"
 
 type Message struct {
 	Queue         string      `json:"queue"`
+	Exchange      string      `json:"exchange"`
 	ReplyTo       string      `json:"reply_to"`
 	ContentType   string      `json:"content_type"`
 	CorrelationID string      `json:"correlation_id"`

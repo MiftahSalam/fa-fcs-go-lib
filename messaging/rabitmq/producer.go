@@ -2,6 +2,7 @@ package rabitmq
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/rabbitmq/amqp091-go"
 
@@ -63,6 +64,86 @@ func (p *producerRMQ) SendMessage(ctx context.Context, exchange, topic string, m
 		}
 		connErr := errors.ExtractError(errors.ErrConnection)
 		return errors.New(connErr.HttpCode, connErr.Code, err.Error())
+	}
+
+	return nil
+}
+
+func (p *producerRMQ) BindExchange(dest, src, topic string) error {
+	select {
+	case err := <-p.err:
+		if err != nil {
+			p.Reconnect()
+		}
+	default:
+	}
+
+	if p.conn == nil {
+		return p.Reconnect()
+	}
+
+	err := p.channel.ExchangeDeclare(
+		dest,
+		"topic",
+		true,  // durable
+		false, // auto-deleted
+		false, // internal
+		false, // noWait
+		nil,   // arguments
+	)
+	if err != nil {
+		fmt.Printf("failed to declare destination exchange %s key %s with error: %v \n", dest, topic, err)
+
+		connErr := errors.ExtractError(errors.ErrConnection)
+		return errors.New(connErr.HttpCode, connErr.Code, err.Error())
+	}
+
+	err = p.channel.ExchangeDeclare(
+		src,
+		"topic",
+		true,  // durable
+		false, // auto-deleted
+		false, // internal
+		false, // noWait
+		nil,   // arguments
+	)
+	if err != nil {
+		fmt.Printf("failed to declare source exchange %s key %s with error: %v \n", dest, topic, err)
+
+		connErr := errors.ExtractError(errors.ErrConnection)
+		return errors.New(connErr.HttpCode, connErr.Code, err.Error())
+	}
+
+	err = p.channel.ExchangeBind(dest, topic, src, false, nil)
+	if err != nil {
+		fmt.Printf("failed to bind exchange %s and %s key %s with error: %v \n", dest, src, topic, err)
+		if err := p.Connect(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (p *producerRMQ) UnbindExchange(dest, src, topic string) error {
+	select {
+	case err := <-p.err:
+		if err != nil {
+			p.Reconnect()
+		}
+	default:
+	}
+
+	if p.conn == nil {
+		return p.Reconnect()
+	}
+
+	err := p.channel.ExchangeUnbind(dest, topic, src, false, nil)
+	if err != nil {
+		fmt.Printf("failed to unbind exchange %s and %s key %s with error: %v \n", dest, src, topic, err)
+		if err := p.Connect(); err != nil {
+			return err
+		}
 	}
 
 	return nil
