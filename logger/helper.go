@@ -16,6 +16,14 @@ func ToField(key string, val interface{}) (field Field) {
 	return
 }
 
+func InjectCtx(parent context.Context, ctx Context) context.Context {
+	if parent == nil {
+		return InjectCtx(context.Background(), ctx)
+	}
+
+	return context.WithValue(parent, ctxKey, ctx)
+}
+
 func ExtractCtx(ctx context.Context) Context {
 	if ctx == nil {
 		return Context{}
