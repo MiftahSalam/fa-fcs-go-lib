@@ -60,11 +60,16 @@ func (consumer *consumerRMQ) handleConsumed(q string, delivery <-chan amqp091.De
 
 	for {
 		for d := range delivery {
+			bodyType, ok := d.Headers["type"].(string)
+			if !ok {
+				bodyType = "type empty"
+			}
 			msg := messaging.Message{
-				Queue: q,
+				Queue:    q,
+				Exchange: d.Exchange,
 				Body: messaging.MessageBody{
 					Data: d.Body,
-					Type: d.Headers["type"].(string),
+					Type: bodyType,
 				},
 			}
 
