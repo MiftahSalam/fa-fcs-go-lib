@@ -152,6 +152,10 @@ func (p *producerRMQ) UnbindExchange(dest, src, topic string) error {
 func (p *producerRMQ) Connect() error {
 	var err error
 
+	if p.conn != nil {
+		p.conn.Close()
+		p.conn = nil
+	}
 	p.conn, err = amqp091.Dial(p.option.Address)
 	if err != nil {
 		return err
